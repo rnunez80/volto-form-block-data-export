@@ -1,0 +1,29 @@
+{
+  "name": "volto-form-block-data-export",
+  "version": "1.2.0",
+  "description": "Extends volto-form-block with a server-proxied generic API data export pipeline",
+  "main": "src/index.js",
+  "repository": "https://github.com/rnunez80/volto-form-block-data-export",
+  "author": "Ramon Nunez <rnunez@york.cuny.edu>",
+  "license": "MIT",
+  "keywords": [
+    "volto-addon",
+    "volto",
+    "plone",
+    "form",
+    "data-export",
+    "api"
+  ],
+  "scripts": {
+    "test": "node --test tests/*.test.mjs",
+    "i18n": "rm -rf build/messages && NODE_ENV=production i18n --addon",
+    "lint": "eslint --max-warnings=0 'src/**/*.{js,jsx,ts,tsx,json}'"
+  },
+  "addons": [
+    "volto-form-block"
+  ],
+  "peerDependencies": {
+    "@plone/volto": ">=16.0.0 || >=17.0.0 || >=18.0.0-alpha.0 || >=19.0.0-alpha.0",
+    "volto-form-block": ">=3.18"
+  }
+}

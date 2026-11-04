@@ -1,0 +1,5 @@
+[coverage:run]
+source = src
+
+[coverage:report]
+skip_covered = False

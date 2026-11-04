@@ -1,0 +1,567 @@
+/* ============================================================
+   ExportDestinationsWidget.css — Full-Width Volto Core Aligned
+   ============================================================ */
+
+/* ── Container Expansion (Full Sidebar Width) ───────────────── */
+
+.export-destinations-widget {
+  margin-top: 0.75rem;
+  margin-bottom: 1.25rem;
+  /* Break out of parent segment padding to utilize full sidebar width */
+  margin-left: -1rem;
+  margin-right: -1rem;
+  width: calc(100% + 2rem);
+  box-sizing: border-box;
+}
+
+/* ── Accordion List ─────────────────────────────────────────── */
+
+.export-dest-accordion.ui.accordion {
+  border-left: none !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  border-top: 1px solid rgba(34, 36, 38, 0.15) !important;
+  border-bottom: 1px solid rgba(34, 36, 38, 0.15) !important;
+}
+
+.export-dest-item {
+  border-bottom: 1px solid rgba(34, 36, 38, 0.1);
+}
+
+.export-dest-item:last-child {
+  border-bottom: none;
+}
+
+.export-dest-item--disabled .dest-title-label {
+  opacity: 0.6;
+}
+
+.export-dest-title.ui.accordion.title,
+.ui.accordion.form .export-dest-accordion .title {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding: 0.85rem 1rem !important;
+  background: #f7fbfd !important;
+  user-select: none;
+  transition: background 0.15s ease;
+}
+
+.export-dest-title.ui.accordion.title:hover,
+.ui.accordion.form .export-dest-accordion .title:hover {
+  background: #eef7fb !important;
+}
+
+.export-dest-title .accordion-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.dest-method-badge.ui.label {
+  font-size: 0.72rem !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.04em !important;
+  padding: 0.25em 0.55em !important;
+  margin: 0 !important;
+  flex-shrink: 0;
+}
+
+.dest-title-label {
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.87);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dest-title-paused {
+  font-size: 0.75rem;
+  font-weight: normal;
+  color: #767676;
+  font-style: italic;
+}
+
+.dest-title-url {
+  font-size: 0.75rem;
+  color: #767676;
+  font-family: 'SF Mono', Consolas, Monaco, monospace;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+
+.export-dest-title .accordion-tools {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: 0.5rem;
+  flex-shrink: 0;
+}
+
+.export-dest-title .accordion-tools .ui.toggle.checkbox {
+  min-height: 1.2rem;
+  margin-right: 0.2rem;
+}
+
+.export-dest-title .accordion-tools .ui.toggle.checkbox input:checked ~ label:before {
+  background-color: #007eb1 !important;
+}
+
+.export-dest-title .accordion-tools button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: #666;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+
+.export-dest-title .accordion-tools button:hover {
+  background: rgba(0, 0, 0, 0.06);
+  color: #111;
+}
+
+.export-dest-title .accordion-tools button.delete-button:hover {
+  background: rgba(228, 1, 102, 0.12);
+}
+
+.dest-delete-confirm-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.dest-delete-confirm-btn {
+  background: #e40166 !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  padding: 3px 7px !important;
+  border-radius: 3px !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+.dest-delete-cancel-btn {
+  background: #e0e0e0 !important;
+  color: #333333 !important;
+  font-size: 11px !important;
+  padding: 3px 6px !important;
+  border-radius: 3px !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+/* ── Content Segment & Full-Width Form Fields ───────────────── */
+
+.export-dest-fields.ui.segment {
+  border: none !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  padding: 1rem 1.1rem 0.75rem 1.1rem !important;
+  margin: 0 !important;
+}
+
+.dest-field {
+  margin-bottom: 1.25rem !important;
+  width: 100% !important;
+}
+
+.dest-field:last-child {
+  margin-bottom: 0.35rem !important;
+}
+
+.dest-field-label {
+  display: block !important;
+  font-size: 0.9rem !important;
+  font-weight: 600 !important;
+  color: rgba(0, 0, 0, 0.87) !important;
+  margin-bottom: 0.35rem !important;
+}
+
+.dest-required {
+  color: #e40166;
+  font-weight: bold;
+  margin-left: 2px;
+}
+
+.dest-field .ui.input,
+.dest-field .ui.input input {
+  width: 100% !important;
+  font-size: 13px !important;
+}
+
+.dest-field .ui.selection.dropdown {
+  width: 100% !important;
+  min-width: 0 !important;
+  font-size: 13px !important;
+}
+
+.dest-field p.help {
+  font-size: 0.8rem !important;
+  color: #6c6c6c !important;
+  line-height: 1.4 !important;
+  margin: 0.35rem 0 0 0 !important;
+}
+
+.dest-field p.help code {
+  background: #f1f5f9;
+  padding: 0.1em 0.3em;
+  border-radius: 3px;
+  font-size: 0.85em;
+  color: #0f172a;
+}
+
+.dest-field-header-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.35rem;
+}
+
+.dest-field-header-row .dest-field-label {
+  margin-bottom: 0 !important;
+}
+
+/* ── Headers Editor ─────────────────────────────────────────── */
+
+.dest-headers-editor {
+  margin-top: 0.35rem;
+  width: 100%;
+}
+
+.dest-header-presets {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.6rem;
+}
+
+.dest-preset-label {
+  font-size: 0.78rem;
+  color: #555;
+  font-weight: 600;
+}
+
+.dest-preset-chip.ui.button {
+  font-size: 0.72rem !important;
+  padding: 0.3em 0.6em !important;
+  margin: 0 !important;
+  border-radius: 12px !important;
+  color: #334155 !important;
+}
+
+.dest-header-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
+  width: 100%;
+}
+
+.dest-header-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.dest-header-row .dest-header-input {
+  flex: 1;
+}
+
+.dest-header-row .delete-button {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  color: #e40166;
+  flex-shrink: 0;
+}
+
+.dest-header-row .delete-button:hover {
+  background: rgba(228, 1, 102, 0.1);
+}
+
+.dest-headers-empty {
+  font-size: 0.82rem;
+  color: #888;
+  font-style: italic;
+  margin: 0.25rem 0 0.5rem 0;
+}
+
+.dest-add-header-btn.ui.button {
+  margin-top: 0.25rem !important;
+  font-size: 0.78rem !important;
+  padding: 0.45em 0.85em !important;
+  white-space: nowrap !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0.3rem !important;
+}
+
+/* ── Payload Template & Monospace Editor ─────────────────────── */
+
+.dest-payload-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dest-token-bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-bottom: 0.5rem;
+  padding: 0.45rem 0.6rem;
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.dest-token-bar__label {
+  font-size: 0.76rem;
+  color: #475569;
+  font-weight: 600;
+}
+
+.dest-token-bar__chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.dest-token-chip.ui.button {
+  font-size: 0.72rem !important;
+  padding: 0.25em 0.55em !important;
+  margin: 0 !important;
+  border-radius: 3px !important;
+}
+
+.dest-code-textarea {
+  font-family: 'SF Mono', Consolas, Monaco, monospace !important;
+  font-size: 12.5px !important;
+  line-height: 1.45 !important;
+  tab-size: 2;
+  border-radius: 4px !important;
+  background: #fafafa !important;
+  border: 1px solid rgba(34, 36, 38, 0.15) !important;
+  padding: 0.65em 0.85em !important;
+  min-height: 120px !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+}
+
+.dest-code-textarea:focus {
+  background: #ffffff !important;
+  border-color: #85b7d9 !important;
+}
+
+/* ── Toggle Field Row ───────────────────────────────────────── */
+
+.dest-field--toggle {
+  margin-top: 1rem !important;
+}
+
+.dest-field--toggle .ui.toggle.checkbox {
+  margin-top: 0.25rem !important;
+}
+
+.dest-field--toggle .ui.toggle.checkbox input:checked ~ label:before {
+  background-color: #007eb1 !important;
+}
+
+/* ── Add Destination Button (Guaranteed Legibility on Hover) ──── */
+
+.dest-add-wrapper {
+  margin-top: 0.85rem;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.dest-empty-placeholder .dest-add-wrapper {
+  padding: 0 !important;
+  margin-top: 0.5rem;
+}
+
+.dest-add-btn,
+.dest-add-btn.ui.button,
+.ui.button.dest-add-btn,
+.ui.primary.button.dest-add-btn,
+button.dest-add-btn {
+  width: 100% !important;
+  background-color: #007eb1 !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  font-size: 13.5px !important;
+  line-height: 1.2 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0.45rem !important;
+  padding: 0.65em 1em !important;
+  border-radius: 4px !important;
+  border: 1px solid #007eb1 !important;
+  box-shadow: 0 1px 3px rgba(0, 126, 177, 0.2) !important;
+  white-space: nowrap !important;
+  transition: background-color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease !important;
+  cursor: pointer !important;
+  opacity: 1 !important;
+  text-decoration: none !important;
+  transform: none !important;
+}
+
+.dest-add-btn:hover,
+.dest-add-btn:focus,
+.dest-add-btn.ui.button:hover,
+.dest-add-btn.ui.button:focus,
+.ui.button.dest-add-btn:hover,
+.ui.button.dest-add-btn:focus,
+.ui.primary.button.dest-add-btn:hover,
+.ui.primary.button.dest-add-btn:focus,
+button.dest-add-btn:hover,
+button.dest-add-btn:focus,
+.dest-add-wrapper .ui.button:hover,
+.dest-add-wrapper .ui.button:focus {
+  background-color: #006b97 !important;
+  color: #ffffff !important;
+  border-color: #006b97 !important;
+  box-shadow: 0 2px 6px rgba(0, 126, 177, 0.35) !important;
+  transform: none !important;
+  opacity: 1 !important;
+  text-decoration: none !important;
+}
+
+.dest-add-btn:active,
+.dest-add-btn.ui.button:active,
+.ui.button.dest-add-btn:active,
+button.dest-add-btn:active {
+  background-color: #005a7f !important;
+  color: #ffffff !important;
+  border-color: #005a7f !important;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2) !important;
+  transform: none !important;
+}
+
+/* Force child text and SVG icons to stay bright white on hover */
+.dest-add-btn *,
+.dest-add-btn:hover *,
+.dest-add-btn:focus *,
+.dest-add-btn.ui.button *,
+.dest-add-btn.ui.button:hover *,
+.dest-add-btn.ui.button:focus *,
+.dest-add-btn.ui.button:active *,
+.ui.button.dest-add-btn *,
+.ui.button.dest-add-btn:hover *,
+.ui.button.dest-add-btn:focus *,
+.ui.primary.button.dest-add-btn *,
+.ui.primary.button.dest-add-btn:hover *,
+.dest-add-wrapper .ui.button *,
+.dest-add-wrapper .ui.button:hover * {
+  color: #ffffff !important;
+  fill: #ffffff !important;
+  white-space: nowrap !important;
+}
+
+/* ── Empty State Placeholder ────────────────────────────────── */
+
+.dest-empty-placeholder.ui.placeholder.segment {
+  min-height: auto !important;
+  padding: 1.5rem 1rem !important;
+  margin: 0.5rem 0.5rem !important;
+  background: #fbfbfb !important;
+  border: 1px dashed rgba(34, 36, 38, 0.2) !important;
+}
+
+.dest-empty-icon {
+  margin-bottom: 0.5rem;
+  color: #007eb1;
+}
+
+.dest-empty-placeholder h4 {
+  margin: 0 0 0.35rem 0 !important;
+  font-size: 1rem !important;
+  color: rgba(0, 0, 0, 0.85) !important;
+}
+
+.dest-empty-placeholder p.help {
+  font-size: 0.85rem !important;
+  color: #666666 !important;
+  margin-bottom: 1rem !important;
+}
+
+/* ── Dark Mode Adaptations ──────────────────────────────────── */
+
+body.dark-mode .export-dest-fields.ui.segment,
+.dark .export-dest-fields.ui.segment {
+  background: #16202e !important;
+}
+
+body.dark-mode .dest-field-label,
+.dark .dest-field-label {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .dest-title-label,
+.dark .dest-title-label {
+  color: #f8fafc !important;
+}
+
+body.dark-mode .export-dest-title.ui.accordion.title,
+.dark .export-dest-title.ui.accordion.title {
+  background: #1e293b !important;
+}
+
+body.dark-mode .dest-code-textarea,
+.dark .dest-code-textarea {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode .dest-token-bar,
+.dark .dest-token-bar {
+  background: #1e293b !important;
+}
+
+body.dark-mode .dest-token-bar__label,
+.dark .dest-token-bar__label {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .dest-field p.help,
+.dark .dest-field p.help {
+  color: #94a3b8 !important;
+}
+
+body.dark-mode .dest-field p.help code,
+.dark .dest-field p.help code {
+  background: #0f172a !important;
+  color: #f1f5f9 !important;
+}
+
+body.dark-mode .dest-empty-placeholder.ui.placeholder.segment,
+.dark .dest-empty-placeholder.ui.placeholder.segment {
+  background: #16202e !important;
+  border-color: #334155 !important;
+}
+
+body.dark-mode .dest-empty-placeholder h4,
+.dark .dest-empty-placeholder h4 {
+  color: #f8fafc !important;
+}
