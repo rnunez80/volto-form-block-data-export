@@ -38,3 +38,5 @@ All notable changes to `volto.formsupport.dataexport` will be documented in this
 - Initial release of `POST @form-export-api` Plone REST API service.
 - Generic HTTP proxy supporting `POST`, `PUT`, and `PATCH` methods.
 - Support for Bearer token and HTTP Basic authentication, custom HTTP headers, `${field_id}` JSON payload template rendering, and submission metadata injection.
+
+rn
