@@ -25,6 +25,8 @@ const SUBMIT_FORM_FAIL = 'SUBMIT_FORM_ACTION_FAIL';
 
 // Map of in-flight form submissions: blockId -> { path, formData }
 const pendingSubmissions = new Map();
+// Set of blockIds currently processed to prevent duplicate export dispatches
+const alreadyHandled = new Set();
 
 /**
  * Walk Redux content state to find the block data for a given block_id.
@@ -35,8 +37,12 @@ const pendingSubmissions = new Map();
  * @returns {Object|null} The block's data object or null
  */
 function findBlockData(state, blockId) {
-  const rootBlocks =
-    state.content?.data?.blocks || state.content?.shadowContent?.blocks || {};
+  if (!state || !blockId) return null;
+  const candidates = [
+    state.content?.data?.blocks,
+    state.content?.shadowContent?.blocks,
+    state.form?.data?.blocks,
+  ].filter(Boolean);
 
   function search(blocksObj) {
     if (!blocksObj || typeof blocksObj !== 'object') return null;
@@ -58,7 +64,11 @@ function findBlockData(state, blockId) {
     return null;
   }
 
-  return search(rootBlocks);
+  for (const blocks of candidates) {
+    const found = search(blocks);
+    if (found) return found;
+  }
+  return null;
 }
 
 /**
@@ -73,47 +83,105 @@ export const exportMiddleware =
   (action) => {
     // 1. Capture payload and path when the form submit action is initiated
     if (action.type === SUBMIT_FORM_ACTION) {
-      const blockId = action.subrequest;
+      const blockId = action.subrequest || action.request?.data?.block_id;
       const requestPath = action.request?.path || '';
       const path = requestPath.replace(/\/@submit-form$/, '');
-      const formData = action.request?.data?.data || [];
+      const rawData =
+        action.request?.data?.data || action.request?.data?.formData || [];
+      const formData = Array.isArray(rawData) ? rawData : [];
+
       if (blockId) {
         pendingSubmissions.set(blockId, { path, formData });
       }
+
+      // Forward action downstream (reaches Volto's api middleware)
+      const result = next(action);
+
+      // Volto's api middleware returns a Promise (actionPromise) for async requests.
+      // In real Volto runtime, api middleware dispatches SUBMIT_FORM_ACTION_SUCCESS
+      // downstream only via next() and resolves actionPromise. By listening to the
+      // returned promise, we guarantee exports are dispatched with the captured formData.
+      if (result && typeof result.then === 'function') {
+        result
+          .then((actionResult) => {
+            if (blockId && !alreadyHandled.has(blockId)) {
+              alreadyHandled.add(blockId);
+              setTimeout(() => alreadyHandled.delete(blockId), 5000);
+
+              const pending =
+                pendingSubmissions.get(blockId) || { path, formData };
+              pendingSubmissions.delete(blockId);
+
+              const state = getState();
+              const currentPath =
+                state.router?.location?.pathname?.replace(/\/$/, '') || '';
+              const targetPath =
+                pending.path || actionResult?.path || currentPath;
+              const targetData = pending.formData || [];
+
+              const blockData = findBlockData(state, blockId);
+              const destinations = blockData?.export_destinations || [];
+
+              destinations
+                .filter((dest) => dest && dest.id && dest.enabled !== false)
+                .forEach((dest) => {
+                  dispatch(
+                    exportToApi(targetPath, blockId, dest.id, targetData),
+                  );
+                });
+            }
+          })
+          .catch(() => {
+            if (blockId) {
+              pendingSubmissions.delete(blockId);
+              alreadyHandled.delete(blockId);
+            }
+          });
+      }
+
+      return result;
     }
 
     // 2. Clean up on failure
     if (action.type === SUBMIT_FORM_FAIL) {
-      if (action.subrequest) {
-        pendingSubmissions.delete(action.subrequest);
+      const blockId = action.subrequest || action.request?.data?.block_id;
+      if (blockId) {
+        pendingSubmissions.delete(blockId);
+        alreadyHandled.delete(blockId);
       }
     }
 
     // Pass action through the rest of the middleware chain
     const result = next(action);
 
-    // 3. Dispatch exports after successful form submission
+    // 3. Fallback for environments where api middleware does not return a Promise
+    // (e.g. unit tests or synchronous mock stores)
     if (action.type === SUBMIT_FORM_SUCCESS) {
       const blockId = action.subrequest;
-      const pending = pendingSubmissions.get(blockId);
-      if (blockId) {
-        pendingSubmissions.delete(blockId);
+      if (blockId && !alreadyHandled.has(blockId)) {
+        alreadyHandled.add(blockId);
+        setTimeout(() => alreadyHandled.delete(blockId), 5000);
+
+        const pending = pendingSubmissions.get(blockId);
+        if (blockId) {
+          pendingSubmissions.delete(blockId);
+        }
+
+        const state = getState();
+        const currentPath =
+          state.router?.location?.pathname?.replace(/\/$/, '') || '';
+        const path = pending?.path ?? action.result?.path ?? currentPath;
+        const formData = pending?.formData ?? action.result?.form_data ?? [];
+
+        const blockData = findBlockData(state, blockId);
+        const destinations = blockData?.export_destinations || [];
+
+        destinations
+          .filter((dest) => dest && dest.id && dest.enabled !== false)
+          .forEach((dest) => {
+            dispatch(exportToApi(path, blockId, dest.id, formData));
+          });
       }
-
-      const state = getState();
-      const currentPath =
-        state.router?.location?.pathname?.replace(/\/$/, '') || '';
-      const path = pending?.path ?? action.result?.path ?? currentPath;
-      const formData = pending?.formData ?? action.result?.form_data ?? [];
-
-      const blockData = findBlockData(state, blockId);
-      const destinations = blockData?.export_destinations || [];
-
-      destinations
-        .filter((dest) => dest && dest.id && dest.enabled !== false)
-        .forEach((dest) => {
-          dispatch(exportToApi(path, blockId, dest.id, formData));
-        });
     }
 
     return result;
