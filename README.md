@@ -1,6 +1,6 @@
 # volto.formsupport.dataexport
 
-**Version:** 1.2.0
+**Version:** 1.2.1
 
 Standalone Plone REST API add-on providing the `POST @form-export-api` server-side proxy endpoint for [`volto-form-block-data-export`](https://github.com/rnunez80/volto-form-block-data-export).
 

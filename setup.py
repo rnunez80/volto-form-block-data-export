@@ -15,7 +15,7 @@ long_description = "\n\n".join(
 
 setup(
     name="volto.formsupport.dataexport",
-    version="1.2.0",
+    version="1.2.1",
     description="Plone REST API proxy endpoint (@form-export-api) for volto-form-block-data-export.",
     long_description=long_description,
     classifiers=[

@@ -1,6 +1,14 @@
 Changelog
 =========
 
+1.2.1 (2026-11-05)
+------------------
+
+- Enhanced payload template substitution in ``POST @form-export-api`` to index form fields by UUID, field_id, label, lowercase label, and snake_case label, allowing templates using ``${name}`` or ``${email}`` to resolve correctly.
+- Updated placeholder regex to ``r"\$\{([\w\-]+)\}"`` so internal UUIDs with hyphens are matched and substituted.
+- Added safe JSON string escaping for substituted template values so quotes, backslashes, and multiline values preserve valid JSON without triggering ``JSONDecodeError``.
+
+
 1.2.0 (2026-10-27)
 ------------------
 

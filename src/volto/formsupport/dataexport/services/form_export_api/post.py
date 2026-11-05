@@ -187,20 +187,46 @@ class FormExportApiPost(Service):
         if not template:
             return {"form_data": form_data, **metadata}
 
-        # Build a lookup dict: field_id → value
+        # Build a lookup dict: match against field_id (UUID), name, label, and slugified label
         field_map = {}
         for item in form_data:
             if isinstance(item, dict):
-                fid = item.get("field_id") or item.get("name") or ""
+                fid = item.get("field_id") or item.get("id") or item.get("name") or ""
+                label = item.get("label") or ""
                 val = item.get("value", "")
-                if isinstance(val, (dict, list)):
-                    val = json.dumps(val)
-                field_map[str(fid)] = str(val)
 
-        # Replace ${field_id} placeholders
+                keys_to_index = {str(fid)}
+                if label:
+                    label_str = str(label).strip()
+                    keys_to_index.add(label_str)
+                    keys_to_index.add(label_str.lower())
+                    keys_to_index.add(label_str.lower().replace(" ", "_"))
+                    keys_to_index.add(label_str.lower().replace(" ", ""))
+                    if fid:
+                        keys_to_index.add(f"{label_str.lower().replace(' ', '_')}_{str(fid)}")
+
+                for k in keys_to_index:
+                    if k:
+                        field_map[k] = val
+
+        # Replace ${field_id} / ${label} placeholders safely preserving JSON syntax
+        def _replace_token(match):
+            token = match.group(1).strip()
+            val = field_map.get(token)
+            if val is None:
+                val = field_map.get(token.lower(), "")
+            if isinstance(val, (dict, list)):
+                return json.dumps(val)
+            if isinstance(val, bool):
+                return "true" if val else "false"
+            if isinstance(val, (int, float)):
+                return str(val)
+            # Escape inner quotes and control characters for safe JSON string replacement
+            return json.dumps(str(val))[1:-1]
+
         substituted = re.sub(
-            r"\$\{(\w+)\}",
-            lambda m: field_map.get(m.group(1), ""),
+            r"\$\{([\w\-]+)\}",
+            _replace_token,
             template,
         )
 

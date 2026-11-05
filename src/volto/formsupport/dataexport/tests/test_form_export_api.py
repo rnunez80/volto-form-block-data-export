@@ -224,6 +224,29 @@ class TestFormExportApiPost(unittest.TestCase):
         self.assertEqual(payload["name"], "Jane Doe")
         self.assertEqual(payload["email"], "jane@example.com")
 
+    def test_payload_template_matches_uuid_and_label_and_escapes_quotes(self):
+        form_data = [
+            {"field_id": "b82c-49a1-872f", "label": "Full Name", "value": 'Jane "The Rock" Doe'},
+            {"field_id": "c93d-51b2-983e", "label": "Email Address", "value": "jane@example.com"},
+        ]
+        template = '{"lead_name": "${full_name}", "lead_email": "${email_address}", "by_uuid": "${b82c-49a1-872f}"}'
+        dest = {**DEST_BASIC, "payload_template": template}
+        service = _make_service(destinations=[dest])
+        mock_resp = MagicMock(ok=True, status_code=200, text="ok")
+        with patch(
+            "volto.formsupport.dataexport.services.form_export_api.post.json_body",
+            return_value=_make_body(form_data=form_data),
+        ), patch(
+            "volto.formsupport.dataexport.services.form_export_api.post.requests.request",
+            return_value=mock_resp,
+        ) as mock_req:
+            service.reply()
+        _, kwargs = mock_req.call_args
+        payload = kwargs["json"]
+        self.assertEqual(payload["lead_name"], 'Jane "The Rock" Doe')
+        self.assertEqual(payload["lead_email"], "jane@example.com")
+        self.assertEqual(payload["by_uuid"], 'Jane "The Rock" Doe')
+
     def test_include_metadata_adds_path_and_timestamp(self):
         dest = {**DEST_BASIC, "include_metadata": True}
         service = _make_service(destinations=[dest])
