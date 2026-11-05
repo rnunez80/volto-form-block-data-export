@@ -36,9 +36,7 @@ const pendingSubmissions = new Map();
  */
 function findBlockData(state, blockId) {
   const rootBlocks =
-    state.content?.data?.blocks ||
-    state.content?.shadowContent?.blocks ||
-    {};
+    state.content?.data?.blocks || state.content?.shadowContent?.blocks || {};
 
   function search(blocksObj) {
     if (!blocksObj || typeof blocksObj !== 'object') return null;
@@ -69,54 +67,57 @@ function findBlockData(state, blockId) {
  * Do NOT register this directly in storeExtenders — use
  * exportStackExtender below instead.
  */
-export const exportMiddleware = ({ dispatch, getState }) => (next) => (action) => {
-  // 1. Capture payload and path when the form submit action is initiated
-  if (action.type === SUBMIT_FORM_ACTION) {
-    const blockId = action.subrequest;
-    const requestPath = action.request?.path || '';
-    const path = requestPath.replace(/\/@submit-form$/, '');
-    const formData = action.request?.data?.data || [];
-    if (blockId) {
-      pendingSubmissions.set(blockId, { path, formData });
-    }
-  }
-
-  // 2. Clean up on failure
-  if (action.type === SUBMIT_FORM_FAIL) {
-    if (action.subrequest) {
-      pendingSubmissions.delete(action.subrequest);
-    }
-  }
-
-  // Pass action through the rest of the middleware chain
-  const result = next(action);
-
-  // 3. Dispatch exports after successful form submission
-  if (action.type === SUBMIT_FORM_SUCCESS) {
-    const blockId = action.subrequest;
-    const pending = pendingSubmissions.get(blockId);
-    if (blockId) {
-      pendingSubmissions.delete(blockId);
+export const exportMiddleware =
+  ({ dispatch, getState }) =>
+  (next) =>
+  (action) => {
+    // 1. Capture payload and path when the form submit action is initiated
+    if (action.type === SUBMIT_FORM_ACTION) {
+      const blockId = action.subrequest;
+      const requestPath = action.request?.path || '';
+      const path = requestPath.replace(/\/@submit-form$/, '');
+      const formData = action.request?.data?.data || [];
+      if (blockId) {
+        pendingSubmissions.set(blockId, { path, formData });
+      }
     }
 
-    const state = getState();
-    const currentPath =
-      state.router?.location?.pathname?.replace(/\/$/, '') || '';
-    const path = pending?.path ?? action.result?.path ?? currentPath;
-    const formData = pending?.formData ?? action.result?.form_data ?? [];
+    // 2. Clean up on failure
+    if (action.type === SUBMIT_FORM_FAIL) {
+      if (action.subrequest) {
+        pendingSubmissions.delete(action.subrequest);
+      }
+    }
 
-    const blockData = findBlockData(state, blockId);
-    const destinations = blockData?.export_destinations || [];
+    // Pass action through the rest of the middleware chain
+    const result = next(action);
 
-    destinations
-      .filter((dest) => dest && dest.id && dest.enabled !== false)
-      .forEach((dest) => {
-        dispatch(exportToApi(path, blockId, dest.id, formData));
-      });
-  }
+    // 3. Dispatch exports after successful form submission
+    if (action.type === SUBMIT_FORM_SUCCESS) {
+      const blockId = action.subrequest;
+      const pending = pendingSubmissions.get(blockId);
+      if (blockId) {
+        pendingSubmissions.delete(blockId);
+      }
 
-  return result;
-};
+      const state = getState();
+      const currentPath =
+        state.router?.location?.pathname?.replace(/\/$/, '') || '';
+      const path = pending?.path ?? action.result?.path ?? currentPath;
+      const formData = pending?.formData ?? action.result?.form_data ?? [];
+
+      const blockData = findBlockData(state, blockId);
+      const destinations = blockData?.export_destinations || [];
+
+      destinations
+        .filter((dest) => dest && dest.id && dest.enabled !== false)
+        .forEach((dest) => {
+          dispatch(exportToApi(path, blockId, dest.id, formData));
+        });
+    }
+
+    return result;
+  };
 
 /**
  * Stack extender for config.settings.storeExtenders.
@@ -133,7 +134,12 @@ export const exportMiddleware = ({ dispatch, getState }) => (next) => (action) =
  */
 export function exportStackExtender(stackOrEnhancer) {
   if (Array.isArray(stackOrEnhancer)) {
-    return [...stackOrEnhancer, exportMiddleware];
+    // Prepend exportMiddleware so it executes BEFORE Volto's api middleware.
+    // Volto's api middleware intercepts actions with `action.request` and converts
+    // them to `_PENDING`, stripping `request`. By placing exportMiddleware at the
+    // start of the stack, it intercepts SUBMIT_FORM_ACTION and saves the payload
+    // before api middleware handles it.
+    return [exportMiddleware, ...stackOrEnhancer];
   }
   if (typeof stackOrEnhancer === 'function') {
     // Redux store enhancer compatibility (e.g. unit tests)
@@ -151,7 +157,7 @@ export function exportStackExtender(stackOrEnhancer) {
       };
     };
   }
-  return [...(stackOrEnhancer || []), exportMiddleware];
+  return [exportMiddleware, ...(stackOrEnhancer || [])];
 }
 
 // Keep the old export name so index.js doesn't need updating

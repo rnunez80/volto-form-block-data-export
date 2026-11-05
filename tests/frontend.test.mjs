@@ -9,7 +9,11 @@ import {
 } from '../src/actions/index.js';
 import { exportToApi as exportReducer } from '../src/reducers/index.js';
 import { ExportFormSchemaExtender } from '../src/formSchemaExtender.js';
-import { exportMiddlewareEnhancer } from '../src/middleware/exportMiddleware.js';
+import {
+  exportMiddlewareEnhancer,
+  exportStackExtender,
+  exportMiddleware,
+} from '../src/middleware/exportMiddleware.js';
 
 describe('Actions', () => {
   test('exportToApi generates correct action structure', () => {
@@ -274,5 +278,14 @@ describe('ExportMiddleware', () => {
 
     // Should not crash and state is clean
     assert.ok(true);
+  });
+
+  test('exportStackExtender prepends exportMiddleware to stack array', () => {
+    const dummyMiddleware = () => () => () => {};
+    const stack = [dummyMiddleware];
+    const updated = exportStackExtender(stack);
+    assert.equal(updated.length, 2);
+    assert.equal(updated[0], exportMiddleware);
+    assert.equal(updated[1], dummyMiddleware);
   });
 });

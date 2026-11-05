@@ -53,4 +53,3 @@ export default applyConfig;
 // Named exports for consumers who want to extend further
 export { ExportDestinationsWidget, ExportFormSchemaExtender };
 export { exportToApi as exportToApiAction } from './actions';
-

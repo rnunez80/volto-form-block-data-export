@@ -1,6 +1,6 @@
 {
   "name": "volto-form-block-data-export",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Extends volto-form-block with a server-proxied generic API data export pipeline",
   "main": "src/index.js",
   "repository": "https://github.com/rnunez80/volto-form-block-data-export",

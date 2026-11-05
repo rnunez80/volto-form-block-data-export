@@ -1,6 +1,6 @@
 # volto-form-block-data-export
 
-**Version:** 1.2.0
+**Version:** 1.2.1
 
 A Volto addon that extends [volto-form-block](https://github.com/collective/volto-form-block) with a **server-proxied generic API export pipeline**.
 

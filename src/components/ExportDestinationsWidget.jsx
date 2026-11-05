@@ -232,7 +232,11 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
     const tag = `"\${${fieldId}}"`;
     const textarea = textareaRefs.current[index];
     if (!textarea) {
-      updateDestination(index, 'payload_template', (dest.payload_template || '') + tag);
+      updateDestination(
+        index,
+        'payload_template',
+        (dest.payload_template || '') + tag,
+      );
       return;
     }
     const start = textarea.selectionStart || 0;
@@ -250,7 +254,11 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
     const dest = destinations[index] || {};
     try {
       const parsed = JSON.parse(dest.payload_template);
-      updateDestination(index, 'payload_template', JSON.stringify(parsed, null, 2));
+      updateDestination(
+        index,
+        'payload_template',
+        JSON.stringify(parsed, null, 2),
+      );
     } catch (e) {
       // invalid json, ignore
     }
@@ -413,7 +421,8 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                           }
                         />
                         <p className="help">
-                          Identify this webhook or API target (e.g. CRM, Zapier, Webhook)
+                          Identify this webhook or API target (e.g. CRM, Zapier,
+                          Webhook)
                         </p>
                       </div>
 
@@ -442,7 +451,8 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                           </div>
                         )}
                         <p className="help">
-                          Server-proxied destination for form submission payloads
+                          Server-proxied destination for form submission
+                          payloads
                         </p>
                       </div>
 
@@ -529,22 +539,22 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                             }
                           />
                           <p className="help">
-                            Stored securely server-side on Plone; never exposed to browser visitors.
+                            Stored securely server-side on Plone; never exposed
+                            to browser visitors.
                           </p>
                         </div>
                       )}
 
                       {/* Headers */}
                       <div className="field dest-field">
-                        <label className="dest-field-label">
-                          Headers
-                        </label>
+                        <label className="dest-field-label">Headers</label>
                         <KeyValueEditor
                           pairs={headerPairs}
                           onChange={onHeadersChange}
                         />
                         <p className="help">
-                          Optional HTTP headers to send with each request (e.g. X-API-Key, Accept)
+                          Optional HTTP headers to send with each request (e.g.
+                          X-API-Key, Accept)
                         </p>
                       </div>
 
@@ -572,7 +582,7 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                                 ⚠ Syntax Error
                               </Label>
                             )}
-                            {dest.payload_template && (
+                            {dest.payload_template ? (
                               <Button
                                 size="mini"
                                 basic
@@ -581,6 +591,38 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                                 onClick={() => formatPayload(index)}
                               >
                                 Format JSON
+                              </Button>
+                            ) : (
+                              <Button
+                                size="mini"
+                                basic
+                                compact
+                                type="button"
+                                onClick={() => {
+                                  const example =
+                                    subblocks && subblocks.length > 0
+                                      ? JSON.stringify(
+                                          subblocks.reduce((acc, s) => {
+                                            const k = s.label
+                                              ? s.label
+                                                  .toLowerCase()
+                                                  .replace(/[^a-zA-Z0-9]/g, '_')
+                                              : s.id;
+                                            acc[k] = `\${${k}}`;
+                                            return acc;
+                                          }, {}),
+                                          null,
+                                          2,
+                                        )
+                                      : '{\n  "lead_name": "${name}",\n  "lead_email": "${email}"\n}';
+                                  updateDestination(
+                                    index,
+                                    'payload_template',
+                                    example,
+                                  );
+                                }}
+                              >
+                                Insert Example
                               </Button>
                             )}
                           </div>
@@ -594,7 +636,13 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                             <div className="dest-token-bar__chips">
                               {subblocks.map((s, sIdx) => {
                                 const fid =
-                                  s.id || s.field_id || `field_${sIdx}`;
+                                  s.field_id ||
+                                  (s.label
+                                    ? s.label
+                                        .toLowerCase()
+                                        .replace(/[^a-zA-Z0-9]/g, '_')
+                                    : s.id) ||
+                                  `field_${sIdx}`;
                                 const flabel = s.label || s.field_name || fid;
                                 return (
                                   <Button
@@ -623,7 +671,7 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                           rows={6}
                           value={dest.payload_template || ''}
                           placeholder={
-                            '{\n  "lead_name": "${name}",\n  "lead_email": "${email}"\n}'
+                            'Leave blank to automatically send all form fields, or enter custom JSON template:\n{\n  "lead_name": "${name}",\n  "lead_email": "${email}"\n}'
                           }
                           onChange={(e) =>
                             updateDestination(
@@ -636,15 +684,16 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                           spellCheck={false}
                         />
                         <p className="help">
-                          Use <code>{'${field_id}'}</code> to inject form values into your custom payload structure. Leave blank to automatically send the complete form submission object.
+                          Use <code>{'${field_id}'}</code> to inject form values
+                          into your custom payload structure. Leave blank to
+                          automatically send the complete form submission
+                          object.
                         </p>
                       </div>
 
                       {/* Include Submission Metadata */}
                       <div className="field dest-field dest-field--toggle">
-                        <label className="dest-field-label">
-                          Metadata
-                        </label>
+                        <label className="dest-field-label">Metadata</label>
                         <Checkbox
                           id={`field-dest-${index}-include_metadata`}
                           toggle
@@ -659,7 +708,8 @@ function ExportDestinationsWidget({ value, onChange, id, formData }) {
                           label="Include Submission Metadata"
                         />
                         <p className="help">
-                          Appends context fields to the payload: path, block_id, and submitted_at.
+                          Appends context fields to the payload: path, block_id,
+                          and submitted_at.
                         </p>
                       </div>
                     </Segment>
